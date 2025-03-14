@@ -8,7 +8,7 @@
 **     Repository  : Kinetis
 **     Datasheet   : KL25P80M48SF0RM, Rev.3, Sep 2012
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:48, # CodeGen: 53
+**     Date/Time   : 2025-03-14, 15:00, # CodeGen: 57
 **     Abstract    :
 **
 **     Settings    :
@@ -244,6 +244,8 @@
 
 /* {Default RTOS Adapter} No RTOS includes */
 #include "TU1.h"
+#include "AS1.h"
+#include "ASerialLdd1.h"
 #include "AD1.h"
 #include "AdcLdd1.h"
 #include "TI1.h"
@@ -435,6 +437,8 @@ void PE_low_level_init(void)
                 ));
   /* NVIC_IPR1: PRI_6=0 */
   NVIC_IPR1 &= (uint32_t)~(uint32_t)(NVIC_IP_PRI_6(0xFF));
+  /* ### Asynchro serial "AS1" init code ... */
+  AS1_Init();
   /* ### ADC "AD1" init code ... */
   AD1_Init();
   /* ### TimerInt_LDD "TimerIntLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */

@@ -20,7 +20,7 @@ C_DEPS += \
 Sources/%.o: ../Sources/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross ARM C Compiler'
-	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -I"C:/Users/Bryan/workspace.kds/lab7/Static_Code/PDD" -I"C:/Users/Bryan/workspace.kds/lab7/Static_Code/IO_Map" -I"C:/Users/Bryan/workspace.kds/lab7/Sources" -I"C:/Users/Bryan/workspace.kds/lab7/Generated_Code" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Static_Code/PDD" -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Static_Code/IO_Map" -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Sources" -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Generated_Code" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

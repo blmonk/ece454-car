@@ -23,6 +23,7 @@
 
 \page page_components Components 
 - \subpage TU1
+- \subpage ASerialLdd1
 - \subpage AdcLdd1
 - \subpage TimerIntLdd1
 - \subpage TU2

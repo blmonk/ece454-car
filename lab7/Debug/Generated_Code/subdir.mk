@@ -5,6 +5,8 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Generated_Code/AD1.c \
+../Generated_Code/AS1.c \
+../Generated_Code/ASerialLdd1.c \
 ../Generated_Code/AdcLdd1.c \
 ../Generated_Code/Cpu.c \
 ../Generated_Code/PE_LDD.c \
@@ -23,6 +25,8 @@ C_SRCS += \
 
 OBJS += \
 ./Generated_Code/AD1.o \
+./Generated_Code/AS1.o \
+./Generated_Code/ASerialLdd1.o \
 ./Generated_Code/AdcLdd1.o \
 ./Generated_Code/Cpu.o \
 ./Generated_Code/PE_LDD.o \
@@ -41,6 +45,8 @@ OBJS += \
 
 C_DEPS += \
 ./Generated_Code/AD1.d \
+./Generated_Code/AS1.d \
+./Generated_Code/ASerialLdd1.d \
 ./Generated_Code/AdcLdd1.d \
 ./Generated_Code/Cpu.d \
 ./Generated_Code/PE_LDD.d \
@@ -62,7 +68,7 @@ C_DEPS += \
 Generated_Code/%.o: ../Generated_Code/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross ARM C Compiler'
-	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -I"C:/Users/Bryan/workspace.kds/lab7/Static_Code/PDD" -I"C:/Users/Bryan/workspace.kds/lab7/Static_Code/IO_Map" -I"C:/Users/Bryan/workspace.kds/lab7/Sources" -I"C:/Users/Bryan/workspace.kds/lab7/Generated_Code" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Static_Code/PDD" -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Static_Code/IO_Map" -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Sources" -I"C:/Users/L00304709/workspace.kds/ece454-car/lab7/Generated_Code" -std=c99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

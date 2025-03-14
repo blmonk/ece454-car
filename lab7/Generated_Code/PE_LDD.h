@@ -6,7 +6,7 @@
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:48, # CodeGen: 53
+**     Date/Time   : 2025-03-14, 15:00, # CodeGen: 57
 **     Abstract    :
 **
 **     Settings    :
@@ -62,6 +62,8 @@
 #include "PE_Error.h"
 #include "PE_Const.h"
 #include "TU1.h"
+#include "AS1.h"
+#include "ASerialLdd1.h"
 #include "AD1.h"
 #include "AdcLdd1.h"
 #include "TI1.h"

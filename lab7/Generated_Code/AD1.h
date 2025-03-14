@@ -7,7 +7,7 @@
 **     Version     : Component 01.697, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 18:33, # CodeGen: 49
+**     Date/Time   : 2025-03-14, 15:11, # CodeGen: 58
 **     Abstract    :
 **         This device "ADC" implements an A/D converter,
 **         its control methods and interrupt/event handling procedure.
@@ -16,9 +16,7 @@
 **          A/D converter                                  : ADC0
 **          Sharing                                        : Disabled
 **          ADC_LDD                                        : ADC_LDD
-**          Interrupt service/event                        : Enabled
-**            A/D interrupt                                : INT_ADC0
-**            A/D interrupt priority                       : medium priority
+**          Interrupt service/event                        : Disabled
 **          A/D channels                                   : 1
 **            Channel0                                     : 
 **              A/D channel (pin)                          : ADC0_SE8/TSI0_CH0/PTB0/LLWU_P5/I2C0_SCL/TPM1_CH0
@@ -113,6 +111,27 @@ extern "C" {
 
 
 #define AD1_SAMPLE_GROUP_SIZE 1U
+static void SaveValue(void);
+/*
+** ===================================================================
+**     Method      :  SaveValue (component ADC)
+**
+**     Description :
+**         This method save measured value and set internal flags.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
+*/
+static void AD1_MainMeasure(void);
+/*
+** ===================================================================
+**     Method      :  MainMeasure (component ADC)
+**
+**     Description :
+**         The method performs the conversion of the input channels in 
+**         the polling mode.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
+*/
 void AD1_HWEnDi(void);
 /*
 ** ===================================================================
@@ -191,7 +210,8 @@ byte AD1_GetValue16(word *Values);
 */
 /* ===================================================================*/
 
-byte AD1_Calibrate(bool WaitForResult);
+#define AD1_Calibrate(W) PE_AD1_Calibrate()
+byte PE_AD1_Calibrate(void);
 /*
 ** ===================================================================
 **     Method      :  AD1_Calibrate (component ADC)
@@ -217,8 +237,6 @@ byte AD1_Calibrate(bool WaitForResult);
 **                           finished correctly
 ** ===================================================================
 */
-
-void AdcLdd1_OnMeasurementComplete(LDD_TUserData *UserDataPtr);
 
 void AD1_Init(void);
 /*

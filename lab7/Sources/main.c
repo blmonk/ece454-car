@@ -41,6 +41,8 @@
 #include "TU2.h"
 #include "TU3.h"
 #include "TU1.h"
+#include "AS1.h"
+#include "ASerialLdd1.h"
 #include "AD1.h"
 #include "AdcLdd1.h"
 /* Including shared modules, which are used for whole project */
@@ -59,12 +61,14 @@ volatile uint8_t adc_index;
 
 uint8_t line_center = 64;
 
+char msg[129];
+
 /*lint -save  -e970 Disable MISRA rule (6.3) checking. */
 int main(void)
 /*lint -restore Enable MISRA rule (6.3) checking. */
 {
   /* Write your local variable definition here */
-	const uint16_t cam_threshold = 30000;
+	// const uint16_t cam_threshold = 30000;
 
   /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
   PE_low_level_init();
@@ -84,22 +88,34 @@ int main(void)
 			  // copy to buffer that only updates every full read
 			  for (uint8_t i=0; i<128; i++){
 				  adc_val_buf[i] = adc_val[i];
-				  if (adc_val[i] > cam_threshold) {
+				  if (adc_val[i] < 8000) {
 					  cam_binary[i] = 1;
+					  // msg[i] = '1';
+					  AS1_SendChar('1');
+
 				  }
 				  else {
 					  cam_binary[i] = 0;
+					  // msg[i] = '0';
+					  AS1_SendChar('0');
 				  }
 			  }
+			  AS1_SendChar(10);
+			  AS1_SendChar('\n');
+			  AS1_SendChar('\r');
+			  // AS1_SendChar('-');
+			  // print to console
+			  // AS1_SendChar();
+
 			  // find left side of line
-			  for (uint8_t i=0; i<128; i++) {
+			  for (int i=0; i<128; i++) {
 				  if (cam_binary[i] == 1) {
 					  line_left = i;
 					  break;
 				  }
 			  }
 			  // find right side of line
-			  for (uint8_t i=127; i>=0; i--) {
+			  for (int i=127; i>=0; i--) {
 				  if (cam_binary[i] == 1) {
 					  line_right = i;
 					  break;

@@ -7,7 +7,7 @@
 **     Version     : Component 01.697, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 18:33, # CodeGen: 49
+**     Date/Time   : 2025-03-14, 15:11, # CodeGen: 58
 **     Abstract    :
 **         This device "ADC" implements an A/D converter,
 **         its control methods and interrupt/event handling procedure.
@@ -16,9 +16,7 @@
 **          A/D converter                                  : ADC0
 **          Sharing                                        : Disabled
 **          ADC_LDD                                        : ADC_LDD
-**          Interrupt service/event                        : Enabled
-**            A/D interrupt                                : INT_ADC0
-**            A/D interrupt priority                       : medium priority
+**          Interrupt service/event                        : Disabled
 **          A/D channels                                   : 1
 **            Channel0                                     : 
 **              A/D channel (pin)                          : ADC0_SE8/TSI0_CH0/PTB0/LLWU_P5/I2C0_SCL/TPM1_CH0
@@ -89,7 +87,6 @@
 
 /* MODULE AD1. */
 
-#include "Events.h"
 #include "AD1.h"
 
 #ifdef __cplusplus
@@ -107,30 +104,52 @@ LDD_TDeviceData *AdcLdd1_DeviceDataPtr; /* Device data pointer */
 static LDD_ADC_TSample SampleGroup[AD1_SAMPLE_GROUP_SIZE];
 /* Temporary buffer for converting results */
 volatile word AD1_OutV;                /* Sum of measured values */
+static bool WaitForRes;                /* Wait for result flag */
 /* Calibration in progress flag */
 static volatile bool OutFlg;           /* Measurement finish flag */
 
 /*
 ** ===================================================================
-**     Method      :  AD1_HWEnDi (component ADC)
+**     Method      :  SaveValue (component ADC)
 **
 **     Description :
-**         Enables or disables the peripheral(s) associated with the 
-**         component. The method is called automatically as a part of the 
-**         Enable and Disable methods and several internal methods.
+**         This method save measured value and set internal flags.
 **         This method is internal. It is used by Processor Expert only.
 ** ===================================================================
 */
-void AD1_HWEnDi(void)
+static void SaveValue(void)
 {
-  if (ModeFlg) {                       /* Start or stop measurement? */
-    OutFlg = FALSE;                    /* Output value isn't available */
-    SampleGroup[0].ChannelIdx = 0U;
-    (void)AdcLdd1_CreateSampleGroup(AdcLdd1_DeviceDataPtr, (LDD_ADC_TSample *)SampleGroup, 1U); /* Configure sample group */
-    (void)AdcLdd1_StartSingleMeasurement(AdcLdd1_DeviceDataPtr);
-  }
+  AdcLdd1_GetMeasuredValues(AdcLdd1_DeviceDataPtr, (LDD_TData *)&AD1_OutV); /* Save measured value */
+  OutFlg = TRUE;                       /* Measured values are available */
+  ModeFlg = STOP;                      /* Set the device to the stop mode */
 }
 
+/*
+** ===================================================================
+**     Method      :  MainMeasure (component ADC)
+**
+**     Description :
+**         The method performs the conversion of the input channels in 
+**         the polling mode.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
+*/
+static void AD1_MainMeasure(void)
+{
+
+  OutFlg = FALSE;                      /* Output value isn't available */
+
+  SampleGroup[0].ChannelIdx = 0U;
+  (void)AdcLdd1_CreateSampleGroup(AdcLdd1_DeviceDataPtr, (LDD_ADC_TSample *)SampleGroup, 1U); /* Configure sample group */
+  (void)AdcLdd1_StartSingleMeasurement(AdcLdd1_DeviceDataPtr);
+  if (!WaitForRes) {                   /* If doesn't wait for result */
+    return;                            /* then return */
+  }
+  while (AdcLdd1_GetMeasurementCompleteStatus(AdcLdd1_DeviceDataPtr) == FALSE) {} /* Wait for AD conversion complete */
+  AdcLdd1_GetMeasuredValues(AdcLdd1_DeviceDataPtr, (LDD_TData *)&AD1_OutV);
+  OutFlg = TRUE;                       /* Measured values are available */
+  SaveValue();
+}
 /*
 ** ===================================================================
 **     Method      :  AD1_Measure (component ADC)
@@ -170,10 +189,8 @@ byte AD1_Measure(bool WaitForResult)
     return ERR_BUSY;                   /* If yes then error */
   }
   ModeFlg = MEASURE;                   /* Set state of device to the measure mode */
-  AD1_HWEnDi();                        /* Enable the device */
-  if (WaitForResult) {                 /* Is WaitForResult TRUE? */
-    while (ModeFlg == MEASURE) {}      /* If yes then wait for end of measurement */
-  }
+  WaitForRes = WaitForResult;          /* Save Wait for result flag */
+  AD1_MainMeasure();
   return ERR_OK;                       /* OK */
 }
 
@@ -208,7 +225,12 @@ byte AD1_Measure(bool WaitForResult)
 byte AD1_GetValue16(word *Values)
 {
   if (!OutFlg) {                       /* Is output flag set? */
-    return ERR_NOTAVAIL;               /* If no then error */
+    if (AdcLdd1_GetMeasurementCompleteStatus(AdcLdd1_DeviceDataPtr) != FALSE) {
+      SaveValue();                     /* Save measured value, finish measuring */
+    }
+    else {
+      return ERR_NOTAVAIL;             /* If no then error */
+    }
   }
   *Values = AD1_OutV;                  /* Save measured values to the output buffer */
   return ERR_OK;                       /* OK */
@@ -239,49 +261,19 @@ byte AD1_GetValue16(word *Values)
 **                           finished correctly
 ** ===================================================================
 */
-byte AD1_Calibrate(bool WaitForResult)
+byte PE_AD1_Calibrate(void)
 {
   if (ModeFlg != STOP) {               /* Is the device in different mode than "stop"? */
     return ERR_BUSY;                   /* If yes then error */
   }
-  ModeFlg = CALIBRATING;               /* Set state of device to the calibration mode */
   (void)AdcLdd1_GetMeasurementCompleteStatus(AdcLdd1_DeviceDataPtr); /* Clear measurement complete status */
   (void)AdcLdd1_StartCalibration(AdcLdd1_DeviceDataPtr); /* Start calibration */
-  if (!WaitForResult) {                /* If doesn't wait for result */
-    return ERR_OK;                     /* then return ERR_OK, but user have to check the result of calibration e.g. by GetCalibrationStatus method */
-  }
   while (!AdcLdd1_GetMeasurementCompleteStatus(AdcLdd1_DeviceDataPtr)) {}; /* Wait until calibration ends */
   if (AdcLdd1_GetCalibrationResultStatus(AdcLdd1_DeviceDataPtr) != ERR_OK) { /* If calibration failed flag is set */
     ModeFlg = STOP;                    /* Set the device to the stop mode */
     return ERR_FAILED;                 /* Return ERR_FAILED error code */
   }
   return ERR_OK;                       /* ADC device is now calibrated */
-}
-
-/*
-** ===================================================================
-**     Method      :  AD1_OnMeasurementComplete (component ADC)
-**
-**     Description :
-**         The method services the conversion complete interrupt of the 
-**         selected peripheral(s) and eventually invokes the beans 
-**         event(s).
-**         This method is internal. It is used by Processor Expert only.
-** ===================================================================
-*/
-void AdcLdd1_OnMeasurementComplete(LDD_TUserData *UserDataPtr)
-{
-  (void)UserDataPtr;                   /* Parameter is not used, suppress unused argument warning */
-  if (ModeFlg == CALIBRATING) {        /* If the driver is in CALIBRATING mode */
-    (void)AdcLdd1_GetCalibrationResultStatus(AdcLdd1_DeviceDataPtr);
-    ModeFlg = STOP;                    /* Set the device to the stop mode */
-    AD1_OnCalibrationEnd();            /* If yes then invoke user event */
-    return;                            /* Return from interrupt */
-  }
-  AdcLdd1_GetMeasuredValues(AdcLdd1_DeviceDataPtr, (LDD_TData *)&AD1_OutV);
-  OutFlg = TRUE;                       /* Measured values are available */
-  AD1_OnEnd();                         /* If yes then invoke user event */
-  ModeFlg = STOP;                      /* Set the device to the stop mode */
 }
 
 /*
