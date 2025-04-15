@@ -7,7 +7,7 @@
 **     Version     : Component 01.014, Driver 01.03, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:48, # CodeGen: 53
+**     Date/Time   : 2025-04-11, 15:35, # CodeGen: 71
 **     Abstract    :
 **          This component implements a pulse-width modulation generator
 **          that generates signal with variable duty and fixed cycle.
@@ -16,23 +16,20 @@
 **          component.
 **     Settings    :
 **          Component name                                 : PwmLdd1
-**          Period device                                  : TPM2_MOD
-**          Duty device                                    : TPM2_C0V
-**          Output pin                                     : ADC0_DP3/ADC0_SE3/PTE22/TPM2_CH0/UART2_TX
+**          Period device                                  : TPM0_MOD
+**          Duty device                                    : TPM0_C2V
+**          Output pin                                     : CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0
 **          Output pin signal                              : 
-**          Counter                                        : TPM2_CNT
-**          Interrupt service/event                        : Enabled
-**            Interrupt                                    : INT_TPM2
-**            Interrupt priority                           : medium priority
-**            Iterations before action/event               : 1
+**          Counter                                        : TPM0_CNT
+**          Interrupt service/event                        : Disabled
 **          Period                                         : 20 ms
-**          Starting pulse width                           : 18.8 ms
+**          Starting pulse width                           : 10 ms
 **          Initial polarity                               : low
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes
 **            Auto initialization                          : yes
 **            Event mask                                   : 
-**              OnEnd                                      : Enabled
+**              OnEnd                                      : Disabled
 **          CPU clock/configuration selection              : 
 **            Clock configuration 0                        : This component enabled
 **            Clock configuration 1                        : This component disabled
@@ -43,7 +40,7 @@
 **            Clock configuration 6                        : This component disabled
 **            Clock configuration 7                        : This component disabled
 **          Referenced components                          : 
-**            Linked component                             : TU3
+**            Linked component                             : TU4
 **     Contents    :
 **         Init       - LDD_TDeviceData* PwmLdd1_Init(LDD_TUserData *UserDataPtr);
 **         SetRatio16 - LDD_TError PwmLdd1_SetRatio16(LDD_TDeviceData *DeviceDataPtr, uint16_t Ratio);
@@ -107,7 +104,7 @@
 #include "PE_Const.h"
 #include "IO_Map.h"
 /* Include inherited beans */
-#include "TU3.h"
+#include "TU4.h"
 #include "TPM_PDD.h"
 
 #include "Cpu.h"
@@ -121,7 +118,7 @@ extern "C" {
 #define PwmLdd1_PERIOD_VALUE_0 0xCCCDUL /* Period value in ticks of the timer in clock configuration 0. */
 
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */
-#define PwmLdd1_PRPH_BASE_ADDRESS  0x4003A000U
+#define PwmLdd1_PRPH_BASE_ADDRESS  0x40038000U
   
 /*! Device data structure pointer used when auto initialization property is enabled. This constant can be passed as a first parameter to all component's methods. */
 #define PwmLdd1_DeviceData  ((LDD_TDeviceData *)PE_LDD_GetDeviceStructure(PE_LDD_COMPONENT_PwmLdd1_ID))
@@ -133,7 +130,6 @@ extern "C" {
 #define PwmLdd1_SetDutyMS_METHOD_ENABLED /*!< SetDutyMS method of the component PwmLdd1 is enabled (generated) */
 
 /* Events configuration constants - generated for all enabled component's events */
-#define PwmLdd1_OnEnd_EVENT_ENABLED    /*!< OnEnd event of the component PwmLdd1 is enabled (generated) */
 
 
 
@@ -244,25 +240,6 @@ LDD_TError PwmLdd1_SetDutyUS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
 */
 /* ===================================================================*/
 LDD_TError PwmLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time);
-
-/*
-** ===================================================================
-**     Method      :  PwmLdd1_OnCounterRestart (component PWM_LDD)
-**
-**     Description :
-**         Called if counter overflow/underflow or counter is 
-**         reinitialized by modulo or compare register matching. 
-**         OnCounterRestart event and Timer unit must be enabled. See <a 
-**         href="UntitledMethods.html#SetEventMask">SetEventMask</a> and 
-**         <a href="UntitledMethods.html#GetEventMask">GetEventMask</a> 
-**         methods.This event is available only if a <a 
-**         href="UntitledProperties.html#IntServiceCounter">Interrupt</a> 
-**         is enabled. The event services the event of the inherited 
-**         component and eventually invokes other events.
-**         This method is internal. It is used by Processor Expert only.
-** ===================================================================
-*/
-void TU3_OnCounterRestart(LDD_TUserData *UserDataPtr);
 
 /* END PwmLdd1. */
 

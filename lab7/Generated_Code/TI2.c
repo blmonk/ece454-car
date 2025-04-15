@@ -7,7 +7,7 @@
 **     Version     : Component 02.161, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:37, # CodeGen: 52
+**     Date/Time   : 2025-03-21, 12:23, # CodeGen: 62
 **     Abstract    :
 **         This component "TimerInt" implements a periodic interrupt.
 **         When the component and its events are enabled, the "OnInterrupt"
@@ -17,10 +17,10 @@
 **         register or timer-overflow interrupt (of free running counter).
 **     Settings    :
 **          Component name                                 : TI2
-**          Periodic interrupt source                      : TPM1_C0V
-**          Counter                                        : TPM1_CNT
+**          Periodic interrupt source                      : PIT_LDVAL1
+**          Counter                                        : PIT_CVAL1
 **          Interrupt service/event                        : Enabled
-**            Interrupt                                    : INT_TPM1
+**            Interrupt                                    : INT_PIT
 **            Interrupt priority                           : medium priority
 **          Interrupt period                               : 10 ms
 **          Same period in modes                           : yes

@@ -7,25 +7,20 @@
 **     Version     : Component 02.241, Driver 01.01, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:48, # CodeGen: 53
+**     Date/Time   : 2025-04-11, 15:35, # CodeGen: 71
 **     Abstract    :
 **         This component implements a pulse-width modulation generator
 **         that generates signal with variable duty and fixed cycle. 
 **     Settings    :
 **          Component name                                 : PWM1
-**          PWM or PPG device                              : TPM2_C0V
+**          PWM or PPG device                              : TPM0_C2V
 **          Duty compare                                   : 
-**          Output pin                                     : ADC0_DP3/ADC0_SE3/PTE22/TPM2_CH0/UART2_TX
+**          Output pin                                     : CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0
 **          Output pin signal                              : 
-**          Counter                                        : TPM2_CNT
-**          Interrupt service/event                        : Enabled
-**            Interrupt                                    : INT_TPM2
-**            Interrupt on duty                            : 
-**            Interrupt overflow                           : INT_TPM2
-**            Interrupt priority                           : medium priority
-**            Iterations before action/event               : 1
+**          Counter                                        : TPM0_CNT
+**          Interrupt service/event                        : Disabled
 **          Period                                         : 20 ms
-**          Starting pulse width                           : 18.8 ms
+**          Starting pulse width                           : 10 ms
 **          Initial polarity                               : low
 **          Same period in modes                           : no
 **          Component uses entire timer                    : no
@@ -88,26 +83,11 @@
 
 /* MODULE PWM1. */
 
-#include "Events.h"
 #include "PWM1.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif 
-
-/*
-** ===================================================================
-**     Method      :  PWM1_OnEnd (component PWM)
-**
-**     Description :
-**         This method is internal. It is used by Processor Expert only.
-** ===================================================================
-*/
-void PwmLdd1_OnEnd(LDD_TUserData *UserDataPtr)
-{
-  (void)UserDataPtr;                   /* Parameter is not used, suppress unused argument warning */
-  PWM1_OnEnd();                        /* Invoke OnEnd event */
-}
 
 /*
 ** ===================================================================

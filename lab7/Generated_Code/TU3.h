@@ -7,7 +7,7 @@
 **     Version     : Component 01.164, Driver 01.11, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:48, # CodeGen: 53
+**     Date/Time   : 2025-03-21, 16:05, # CodeGen: 68
 **     Abstract    :
 **          This TimerUnit component provides a low level API for unified hardware access across
 **          various timer devices using the Prescaler-Counter-Compare-Capture timer structure.
@@ -20,29 +20,26 @@
 **          Value type                                     : uint16_t
 **          Input clock source                             : Internal
 **            Counter frequency                            : Auto select
-**          Counter restart                                : On-match
-**            Period device                                : TPM2_MOD
-**            Period                                       : 20 ms
-**            Interrupt                                    : Enabled
-**              Interrupt                                  : INT_TPM2
-**              Interrupt priority                         : medium priority
+**          Counter restart                                : On-overrun
+**            Overrun period                               : 25 ms
+**            Interrupt                                    : Disabled
 **          Channel list                                   : 1
 **            Channel 0                                    : 
-**              Mode                                       : Compare
-**                Compare                                  : TPM2_C0V
-**                Offset                                   : 18.8 ms
-**                Output on compare                        : Set
-**                  Output on overrun                      : Clear
-**                  Initial state                          : Low
-**                  Output pin                             : ADC0_DP3/ADC0_SE3/PTE22/TPM2_CH0/UART2_TX
-**                  Output pin signal                      : 
-**                Interrupt                                : Disabled
+**              Mode                                       : Capture
+**                Capture                                  : TPM2_C1V
+**                Capture input pin                        : ADC0_SE13/TSI0_CH8/PTB3/I2C0_SDA/TPM2_CH1
+**                Capture input signal                     : 
+**                Edge                                     : rising or falling edge
+**                Maximum time of event                    : 25.00001792 ms
+**                Interrupt                                : Enabled
+**                  Interrupt                              : INT_TPM2
+**                  Interrupt priority                     : medium priority
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes
 **            Auto initialization                          : no
 **            Event mask                                   : 
-**              OnCounterRestart                           : Enabled
-**              OnChannel0                                 : Disabled
+**              OnCounterRestart                           : Disabled
+**              OnChannel0                                 : Enabled
 **              OnChannel1                                 : Disabled
 **              OnChannel2                                 : Disabled
 **              OnChannel3                                 : Disabled
@@ -60,12 +57,9 @@
 **            Clock configuration 6                        : This component disabled
 **            Clock configuration 7                        : This component disabled
 **     Contents    :
-**         Init               - LDD_TDeviceData* TU3_Init(LDD_TUserData *UserDataPtr);
-**         GetPeriodTicks     - LDD_TError TU3_GetPeriodTicks(LDD_TDeviceData *DeviceDataPtr, TU3_TValueType...
-**         GetCounterValue    - TU3_TValueType TU3_GetCounterValue(LDD_TDeviceData *DeviceDataPtr);
-**         SetOffsetTicks     - LDD_TError TU3_SetOffsetTicks(LDD_TDeviceData *DeviceDataPtr, uint8_t...
-**         GetOffsetTicks     - LDD_TError TU3_GetOffsetTicks(LDD_TDeviceData *DeviceDataPtr, uint8_t...
-**         SelectOutputAction - LDD_TError TU3_SelectOutputAction(LDD_TDeviceData *DeviceDataPtr, uint8_t...
+**         Init            - LDD_TDeviceData* TU3_Init(LDD_TUserData *UserDataPtr);
+**         ResetCounter    - LDD_TError TU3_ResetCounter(LDD_TDeviceData *DeviceDataPtr);
+**         GetCaptureValue - LDD_TError TU3_GetCaptureValue(LDD_TDeviceData *DeviceDataPtr, uint8_t...
 **
 **     Copyright : 1997 - 2015 Freescale Semiconductor, Inc. 
 **     All Rights Reserved.
@@ -137,24 +131,20 @@ extern "C" {
 #define TU3_CNT_INP_FREQ_U_0 0x00280000UL /* Counter input frequency in Hz */
 #define TU3_CNT_INP_FREQ_R_0 2621438.120953155F /* Counter input frequency in Hz */
 #define TU3_CNT_INP_FREQ_COUNT 0U      /* Count of predefined counter input frequencies */
-#define TU3_PERIOD_TICKS   0xCCCDUL    /* Initialization value of period in 'counter ticks' */
+#define TU3_PERIOD_TICKS   0x00010000UL /* Initialization value of period in 'counter ticks' */
 #define TU3_NUMBER_OF_CHANNELS 0x01U   /* Count of predefined channels */
 #define TU3_COUNTER_WIDTH  0x10U       /* Counter width in bits  */
 #define TU3_COUNTER_DIR    DIR_UP      /* Direction of counting */
-#define TU3_OFFSET_0_TICKS 0xC083ul    /* Initialization value of offset as 'counter ticks' for channel 0 */
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */
 #define TU3_PRPH_BASE_ADDRESS  0x4003A000U
   
 /* Methods configuration constants - generated for all enabled component's methods */
 #define TU3_Init_METHOD_ENABLED        /*!< Init method of the component TU3 is enabled (generated) */
-#define TU3_GetPeriodTicks_METHOD_ENABLED /*!< GetPeriodTicks method of the component TU3 is enabled (generated) */
-#define TU3_GetCounterValue_METHOD_ENABLED /*!< GetCounterValue method of the component TU3 is enabled (generated) */
-#define TU3_SetOffsetTicks_METHOD_ENABLED /*!< SetOffsetTicks method of the component TU3 is enabled (generated) */
-#define TU3_GetOffsetTicks_METHOD_ENABLED /*!< GetOffsetTicks method of the component TU3 is enabled (generated) */
-#define TU3_SelectOutputAction_METHOD_ENABLED /*!< SelectOutputAction method of the component TU3 is enabled (generated) */
+#define TU3_ResetCounter_METHOD_ENABLED /*!< ResetCounter method of the component TU3 is enabled (generated) */
+#define TU3_GetCaptureValue_METHOD_ENABLED /*!< GetCaptureValue method of the component TU3 is enabled (generated) */
 
 /* Events configuration constants - generated for all enabled component's events */
-#define TU3_OnCounterRestart_EVENT_ENABLED /*!< OnCounterRestart event of the component TU3 is enabled (generated) */
+#define TU3_OnChannel0_EVENT_ENABLED   /*!< OnChannel0 event of the component TU3 is enabled (generated) */
 
 
 
@@ -186,123 +176,35 @@ LDD_TDeviceData* TU3_Init(LDD_TUserData *UserDataPtr);
 
 /*
 ** ===================================================================
-**     Method      :  TU3_GetPeriodTicks (component TimerUnit_LDD)
+**     Method      :  TU3_ResetCounter (component TimerUnit_LDD)
 */
 /*!
 **     @brief
-**         Returns the number of counter ticks before re-initialization.
-**         See also method [SetPeriodTicks]. This method is available
-**         only if the property ["Counter restart"] is switched to
-**         'on-match' value.
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         TicksPtr        - Pointer to return value of the
-**                           number of counter ticks before
-**                           re-initialization
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK 
-**                           ERR_SPEED - The component does not work in
-**                           the active clock configuration
-*/
-/* ===================================================================*/
-LDD_TError TU3_GetPeriodTicks(LDD_TDeviceData *DeviceDataPtr, TU3_TValueType *TicksPtr);
-
-/*
-** ===================================================================
-**     Method      :  TU3_GetCounterValue (component TimerUnit_LDD)
-*/
-/*!
-**     @brief
-**         Returns the content of counter register. This method can be
-**         used both if counter is enabled and if counter is disabled.
-**         The method is not available if HW doesn't allow reading of
+**         Resets counter. If counter is counting up then it is set to
+**         zero. If counter is counting down then counter is updated to
+**         the reload value.
+**         The method is not available if HW doesn't allow resetting of
 **         the counter.
 **     @param
 **         DeviceDataPtr   - Device data structure
 **                           pointer returned by [Init] method.
 **     @return
-**                         - Counter value (number of counted ticks).
-*/
-/* ===================================================================*/
-TU3_TValueType TU3_GetCounterValue(LDD_TDeviceData *DeviceDataPtr);
-
-/*
-** ===================================================================
-**     Method      :  TU3_SetOffsetTicks (component TimerUnit_LDD)
-*/
-/*!
-**     @brief
-**         Sets the new offset value to channel specified by the
-**         parameter ChannelIdx. It is user responsibility to use value
-**         below selected period. This method is available when at
-**         least one channel is configured.
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         ChannelIdx      - Index of the component
-**                           channel.
-**     @param
-**         Ticks           - Number of counter ticks to compare
-**                           match.
-**     @return
 **                         - Error code, possible codes:
 **                           ERR_OK - OK 
-**                           ERR_PARAM_INDEX - ChannelIdx parameter is
-**                           out of possible range.
-**                           ERR_NOTAVAIL -  The compare mode is not
-**                           selected for selected channel
-**                           ERR_PARAM_TICKS - Ticks parameter is out of
-**                           possible range.
 **                           ERR_SPEED - The component does not work in
 **                           the active clock configuration
 */
 /* ===================================================================*/
-LDD_TError TU3_SetOffsetTicks(LDD_TDeviceData *DeviceDataPtr, uint8_t ChannelIdx, TU3_TValueType Ticks);
+LDD_TError TU3_ResetCounter(LDD_TDeviceData *DeviceDataPtr);
 
 /*
 ** ===================================================================
-**     Method      :  TU3_GetOffsetTicks (component TimerUnit_LDD)
+**     Method      :  TU3_GetCaptureValue (component TimerUnit_LDD)
 */
 /*!
 **     @brief
-**         Returns the number of counter ticks to compare match channel
-**         specified by the parameter ChannelIdx. See also method
-**         [SetOffsetTicks]. This method is available when at least one
-**         channel is configured.
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-**     @param
-**         ChannelIdx      - Index of the component
-**                           channel.
-**     @param
-**         TicksPtr        - Pointer to return value of the
-**                           number of counter ticks to compare match.
-**     @return
-**                         - Error code, possible codes:
-**                           ERR_OK - OK 
-**                           ERR_PARAM_INDEX - ChannelIdx parameter is
-**                           out of possible range.
-**                           ERR_NOTAVAIL -  The compare mode is not
-**                           selected for selected channel.
-**                           ERR_SPEED - The component does not work in
-**                           the active clock configuration
-*/
-/* ===================================================================*/
-LDD_TError TU3_GetOffsetTicks(LDD_TDeviceData *DeviceDataPtr, uint8_t ChannelIdx, TU3_TValueType *TicksPtr);
-
-/*
-** ===================================================================
-**     Method      :  TU3_SelectOutputAction (component TimerUnit_LDD)
-*/
-/*!
-**     @brief
-**         Sets the type of compare match and counter overflow action
-**         on channel output. This method is available when at least
+**         Returns the content of capture register specified by the
+**         parameter ChannelIdx. This method is available when at least
 **         one channel is configured.
 **     @param
 **         DeviceDataPtr   - Device data structure
@@ -311,24 +213,20 @@ LDD_TError TU3_GetOffsetTicks(LDD_TDeviceData *DeviceDataPtr, uint8_t ChannelIdx
 **         ChannelIdx      - Index of the component
 **                           channel.
 **     @param
-**         CompareAction   - Select output action
-**                           on compare match
-**     @param
-**         CounterAction   - Select output action
-**                           on counter overflow
+**         ValuePtr        - Pointer to return value of the
+**                           capture register.
 **     @return
 **                         - Error code, possible codes:
-**                           ERR_OK - OK
+**                           ERR_OK - OK 
 **                           ERR_PARAM_INDEX - ChannelIdx parameter is
 **                           out of possible range
-**                           ERR_NOTAVAIL -  Action is not possible on
-**                           selected channel or counter. Supported
-**                           combinations are HW specific.
+**                           ERR_NOTAVAIL -  The capture mode is not
+**                           selected for selected channel.
 **                           ERR_SPEED - The component does not work in
 **                           the active clock configuration
 */
 /* ===================================================================*/
-LDD_TError TU3_SelectOutputAction(LDD_TDeviceData *DeviceDataPtr, uint8_t ChannelIdx, LDD_TimerUnit_TOutAction CompareAction, LDD_TimerUnit_TOutAction CounterAction);
+LDD_TError TU3_GetCaptureValue(LDD_TDeviceData *DeviceDataPtr, uint8_t ChannelIdx, TU3_TValueType *ValuePtr);
 
 /*
 ** ===================================================================

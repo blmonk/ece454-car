@@ -40,6 +40,13 @@
 #include "si_cam.h"
 #include "TU2.h"
 #include "TU3.h"
+#include "PWM2.h"
+#include "PwmLdd2.h"
+#include "PWM3.h"
+#include "PwmLdd3.h"
+#include "TU4.h"
+#include "Cap1.h"
+#include "CaptureLdd1.h"
 #include "TU1.h"
 #include "AS1.h"
 #include "ASerialLdd1.h"
@@ -75,6 +82,11 @@ int main(void)
   /*** End of Processor Expert internal initialization.                    ***/
 
   /* Write your code here */
+  // disable pwm output for braking FET (PDT0 - PWM3)
+  // enable pwm and set at constant speed for main FET (PDT1 - PWM2)
+
+
+
   uint8_t line_left  = 0;
   uint8_t line_right = 127;
 

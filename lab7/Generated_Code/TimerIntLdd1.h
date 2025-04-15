@@ -7,7 +7,7 @@
 **     Version     : Component 01.018, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 16:45, # CodeGen: 48
+**     Date/Time   : 2025-03-21, 12:23, # CodeGen: 62
 **     Abstract    :
 **          This TimerInt component implements a periodic interrupt.
 **          When the component and its events are enabled, the "OnInterrupt"
@@ -18,10 +18,10 @@
 **          component.
 **     Settings    :
 **          Component name                                 : TimerIntLdd1
-**          Periodic interrupt source                      : TPM0_C0V
-**          Counter                                        : TPM0_CNT
+**          Periodic interrupt source                      : PIT_LDVAL0
+**          Counter                                        : PIT_CVAL0
 **          Interrupt service/event                        : Enabled
-**            Interrupt                                    : INT_TPM0
+**            Interrupt                                    : INT_PIT
 **            Interrupt priority                           : medium priority
 **          Interrupt period                               : 100 µs
 **          Initialization                                 : 
@@ -112,7 +112,7 @@ extern "C" {
 
 
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */
-#define TimerIntLdd1_PRPH_BASE_ADDRESS  0x40038000U
+#define TimerIntLdd1_PRPH_BASE_ADDRESS  0x40037000U
   
 /*! Device data structure pointer used when auto initialization property is enabled. This constant can be passed as a first parameter to all component's methods. */
 #define TimerIntLdd1_DeviceData  ((LDD_TDeviceData *)PE_LDD_GetDeviceStructure(PE_LDD_COMPONENT_TimerIntLdd1_ID))
@@ -153,7 +153,7 @@ LDD_TDeviceData* TimerIntLdd1_Init(LDD_TUserData *UserDataPtr);
 
 /*
 ** ===================================================================
-**     Method      :  TU1_OnChannel0 (component TimerInt_LDD)
+**     Method      :  TU1_OnCounterRestart (component TimerInt_LDD)
 **
 **     Description :
 **         The method services the event of the linked component TU1 and 
@@ -161,7 +161,7 @@ LDD_TDeviceData* TimerIntLdd1_Init(LDD_TUserData *UserDataPtr);
 **         This method is internal. It is used by Processor Expert only.
 ** ===================================================================
 */
-void TU1_OnChannel0(LDD_TUserData *UserDataPtr);
+void TU1_OnCounterRestart(LDD_TUserData *UserDataPtr);
 
 /* END TimerIntLdd1. */
 

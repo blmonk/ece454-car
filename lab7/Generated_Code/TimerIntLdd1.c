@@ -7,7 +7,7 @@
 **     Version     : Component 01.018, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 16:45, # CodeGen: 48
+**     Date/Time   : 2025-03-21, 12:23, # CodeGen: 62
 **     Abstract    :
 **          This TimerInt component implements a periodic interrupt.
 **          When the component and its events are enabled, the "OnInterrupt"
@@ -18,10 +18,10 @@
 **          component.
 **     Settings    :
 **          Component name                                 : TimerIntLdd1
-**          Periodic interrupt source                      : TPM0_C0V
-**          Counter                                        : TPM0_CNT
+**          Periodic interrupt source                      : PIT_LDVAL0
+**          Counter                                        : PIT_CVAL0
 **          Interrupt service/event                        : Enabled
-**            Interrupt                                    : INT_TPM0
+**            Interrupt                                    : INT_PIT
 **            Interrupt priority                           : medium priority
 **          Interrupt period                               : 100 µs
 **          Initialization                                 : 
@@ -104,8 +104,6 @@ extern "C" {
 typedef struct {
   LDD_TDeviceData *LinkedDeviceDataPtr;
   bool EnUser;                         /* Enable/Disable device */
-  LDD_TEventMask EnEvents;             /* Enable/Disable events mask */
-  uint16_t CmpVal;                     /* Value periodically addded to compare register */
   LDD_TUserData *UserDataPtr;          /* RTOS device data structure */
 } TimerIntLdd1_TDeviceData;
 
@@ -114,7 +112,6 @@ typedef TimerIntLdd1_TDeviceData *TimerIntLdd1_TDeviceDataPtr; /* Pointer to the
 /* {Default RTOS Adapter} Static object used for simulation of dynamic driver memory allocation */
 static TimerIntLdd1_TDeviceData DeviceDataPrv__DEFAULT_RTOS_ALLOC;
 
-#define CHANNEL 0x00U
 #define AVAILABLE_EVENTS_MASK (LDD_TEventMask)(LDD_TIMERINT_ON_INTERRUPT)
 /* Internal method prototypes */
 /*
@@ -148,9 +145,7 @@ LDD_TDeviceData* TimerIntLdd1_Init(LDD_TUserData *UserDataPtr)
   /* {Default RTOS Adapter} Driver memory allocation: Dynamic allocation is simulated by a pointer to the static object */
   DeviceDataPrv = &DeviceDataPrv__DEFAULT_RTOS_ALLOC;
   DeviceDataPrv->UserDataPtr = UserDataPtr; /* Store the RTOS device structure */
-  DeviceDataPrv->EnEvents = 0x01u;     /* Initial event mask */
   DeviceDataPrv->EnUser = TRUE;        /* Set the flag "device enabled" */
-  DeviceDataPrv->CmpVal = 0x0831U;     /* Initial value periodically addded to compare register */
   /* Registration of the device structure */
   PE_LDD_RegisterDeviceStructure(PE_LDD_COMPONENT_TimerIntLdd1_ID,DeviceDataPrv);
   DeviceDataPrv->LinkedDeviceDataPtr = TU1_Init((LDD_TUserData *)NULL);
@@ -161,13 +156,12 @@ LDD_TDeviceData* TimerIntLdd1_Init(LDD_TUserData *UserDataPtr)
     /* {Default RTOS Adapter} Driver memory deallocation: Dynamic allocation is simulated, no deallocation code is generated */
     return NULL;                       /* If so, then the TimerInt initialization is also unsuccessful */
   }
-  (void)TU1_SetEventMask(DeviceDataPrv->LinkedDeviceDataPtr, TU1_GetEventMask(DeviceDataPrv->LinkedDeviceDataPtr) | LDD_TIMERUNIT_ON_CHANNEL_0); /* Enable TimerUnit event */
   return ((LDD_TDeviceData *)DeviceDataPrv); /* Return pointer to the device data structure */
 }
 
 /*
 ** ===================================================================
-**     Method      :  TU1_OnChannel0 (component TimerInt_LDD)
+**     Method      :  TU1_OnCounterRestart (component TimerInt_LDD)
 **
 **     Description :
 **         The method services the event of the linked component TU1 and 
@@ -175,18 +169,12 @@ LDD_TDeviceData* TimerIntLdd1_Init(LDD_TUserData *UserDataPtr)
 **         This method is internal. It is used by Processor Expert only.
 ** ===================================================================
 */
-void TU1_OnChannel0(LDD_TUserData *UserDataPtr)
+void TU1_OnCounterRestart(LDD_TUserData *UserDataPtr)
 {
   TimerIntLdd1_TDeviceData *DeviceDataPrv = PE_LDD_DeviceDataList[PE_LDD_COMPONENT_TimerIntLdd1_ID];
-  uint16_t Ticks;
 
   (void)UserDataPtr;                   /* Parameter is not used, suppress unused argument warning */
-  (void)TU1_GetOffsetTicks(DeviceDataPrv->LinkedDeviceDataPtr, CHANNEL, &Ticks);
-  Ticks += DeviceDataPrv->CmpVal;
-  (void)TU1_SetOffsetTicks(DeviceDataPrv->LinkedDeviceDataPtr, CHANNEL, Ticks);
-  if (DeviceDataPrv->EnEvents & LDD_TIMERINT_ON_INTERRUPT) { /* Is the event enabled? */
-    TimerIntLdd1_OnInterrupt(DeviceDataPrv->UserDataPtr); /* Invoke OnInterrupt event */
-  }
+  TimerIntLdd1_OnInterrupt(DeviceDataPrv->UserDataPtr); /* Invoke OnInterrupt event */
 }
 
 /* END TimerIntLdd1. */

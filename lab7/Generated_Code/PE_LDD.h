@@ -6,7 +6,7 @@
 **     Version     : Component 01.025, Driver 01.04, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-14, 15:00, # CodeGen: 57
+**     Date/Time   : 2025-04-11, 15:35, # CodeGen: 71
 **     Abstract    :
 **
 **     Settings    :
@@ -70,12 +70,19 @@
 #include "TimerIntLdd1.h"
 #include "TI2.h"
 #include "TimerIntLdd2.h"
-#include "PWM1.h"
-#include "PwmLdd1.h"
 #include "clk_cam.h"
 #include "si_cam.h"
 #include "TU2.h"
+#include "Cap1.h"
+#include "CaptureLdd1.h"
 #include "TU3.h"
+#include "PWM1.h"
+#include "PwmLdd1.h"
+#include "PWM2.h"
+#include "PwmLdd2.h"
+#include "PWM3.h"
+#include "PwmLdd3.h"
+#include "TU4.h"
 
 
 /*

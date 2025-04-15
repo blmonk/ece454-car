@@ -7,7 +7,7 @@
 **     Version     : Component 01.014, Driver 01.03, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-09, 20:48, # CodeGen: 53
+**     Date/Time   : 2025-04-11, 15:35, # CodeGen: 71
 **     Abstract    :
 **          This component implements a pulse-width modulation generator
 **          that generates signal with variable duty and fixed cycle.
@@ -16,23 +16,20 @@
 **          component.
 **     Settings    :
 **          Component name                                 : PwmLdd1
-**          Period device                                  : TPM2_MOD
-**          Duty device                                    : TPM2_C0V
-**          Output pin                                     : ADC0_DP3/ADC0_SE3/PTE22/TPM2_CH0/UART2_TX
+**          Period device                                  : TPM0_MOD
+**          Duty device                                    : TPM0_C2V
+**          Output pin                                     : CMP0_IN5/ADC0_SE4b/PTE29/TPM0_CH2/TPM_CLKIN0
 **          Output pin signal                              : 
-**          Counter                                        : TPM2_CNT
-**          Interrupt service/event                        : Enabled
-**            Interrupt                                    : INT_TPM2
-**            Interrupt priority                           : medium priority
-**            Iterations before action/event               : 1
+**          Counter                                        : TPM0_CNT
+**          Interrupt service/event                        : Disabled
 **          Period                                         : 20 ms
-**          Starting pulse width                           : 18.8 ms
+**          Starting pulse width                           : 10 ms
 **          Initial polarity                               : low
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes
 **            Auto initialization                          : yes
 **            Event mask                                   : 
-**              OnEnd                                      : Enabled
+**              OnEnd                                      : Disabled
 **          CPU clock/configuration selection              : 
 **            Clock configuration 0                        : This component enabled
 **            Clock configuration 1                        : This component disabled
@@ -43,7 +40,7 @@
 **            Clock configuration 6                        : This component disabled
 **            Clock configuration 7                        : This component disabled
 **          Referenced components                          : 
-**            Linked component                             : TU3
+**            Linked component                             : TU4
 **     Contents    :
 **         Init       - LDD_TDeviceData* PwmLdd1_Init(LDD_TUserData *UserDataPtr);
 **         SetRatio16 - LDD_TError PwmLdd1_SetRatio16(LDD_TDeviceData *DeviceDataPtr, uint16_t Ratio);
@@ -98,7 +95,6 @@
 
 /* MODULE PwmLdd1. */
 
-#include "PWM1.h"
 #include "PwmLdd1.h"
 /* {Default RTOS Adapter} No RTOS includes */
 
@@ -119,7 +115,6 @@ typedef PwmLdd1_TDeviceData *PwmLdd1_TDeviceDataPtr; /* Pointer to the device da
 static PwmLdd1_TDeviceData DeviceDataPrv__DEFAULT_RTOS_ALLOC;
 
 #define CHANNEL 0x00U
-#define AVAILABLE_EVENTS_MASK (LDD_TEventMask)(LDD_PWM_ON_END)
 /* Internal method prototypes */
 static void SetRatio(LDD_TDeviceData *DeviceDataPtr);
 /*
@@ -154,10 +149,10 @@ LDD_TDeviceData* PwmLdd1_Init(LDD_TUserData *UserDataPtr)
   DeviceDataPrv = &DeviceDataPrv__DEFAULT_RTOS_ALLOC;
   DeviceDataPrv->UserDataPtr = UserDataPtr; /* Store the RTOS device structure */
   DeviceDataPrv->EnUser = TRUE;        /* Set the flag "device enabled" */
-  DeviceDataPrv->RatioStore = 0xF0A2U; /* Ratio after initialization */
+  DeviceDataPrv->RatioStore = 0x7FFFU; /* Ratio after initialization */
   /* Registration of the device structure */
   PE_LDD_RegisterDeviceStructure(PE_LDD_COMPONENT_PwmLdd1_ID,DeviceDataPrv);
-  DeviceDataPrv->LinkedDeviceDataPtr = TU3_Init((LDD_TUserData *)NULL);
+  DeviceDataPrv->LinkedDeviceDataPtr = TU4_Init((LDD_TUserData *)NULL);
   if (DeviceDataPrv->LinkedDeviceDataPtr == NULL) { /* Is initialization of TimerUnit unsuccessful? */
     /* Unregistration of the device structure */
     PE_LDD_UnregisterDeviceStructure(PE_LDD_COMPONENT_PwmLdd1_ID);
@@ -297,30 +292,6 @@ LDD_TError PwmLdd1_SetDutyMS(LDD_TDeviceData *DeviceDataPtr, uint16_t Time)
 
 /*
 ** ===================================================================
-**     Method      :  PwmLdd1_OnCounterRestart (component PWM_LDD)
-**
-**     Description :
-**         Called if counter overflow/underflow or counter is 
-**         reinitialized by modulo or compare register matching. 
-**         OnCounterRestart event and Timer unit must be enabled. See <a 
-**         href="UntitledMethods.html#SetEventMask">SetEventMask</a> and 
-**         <a href="UntitledMethods.html#GetEventMask">GetEventMask</a> 
-**         methods.This event is available only if a <a 
-**         href="UntitledProperties.html#IntServiceCounter">Interrupt</a> 
-**         is enabled. The event services the event of the inherited 
-**         component and eventually invokes other events.
-**         This method is internal. It is used by Processor Expert only.
-** ===================================================================
-*/
-void TU3_OnCounterRestart(LDD_TUserData *UserDataPtr)
-{
-  PwmLdd1_TDeviceData *DeviceDataPrv = PE_LDD_DeviceDataList[PE_LDD_COMPONENT_PwmLdd1_ID];
-
-  PwmLdd1_OnEnd(DeviceDataPrv->UserDataPtr); /* Invoke OnEnd event */
-}
-
-/*
-** ===================================================================
 **     Method      :  SetRatio (component PWM_LDD)
 **
 **     Description :
@@ -335,14 +306,14 @@ static void SetRatio(LDD_TDeviceData *DeviceDataPtr)
   uint16_t Period;
   uint16_t Duty;
 
-  (void)TU3_GetPeriodTicks(DeviceDataPrv->LinkedDeviceDataPtr, &Period);
+  (void)TU4_GetPeriodTicks(DeviceDataPrv->LinkedDeviceDataPtr, &Period);
   if (Period == 0U) {
     Duty = DeviceDataPrv->RatioStore;
   }
   else {
     Duty = (uint16_t)((((uint32_t)(Period) * DeviceDataPrv->RatioStore) + 0x8000) >> 0x10);
   }
-  (void)TU3_SetOffsetTicks(DeviceDataPrv->LinkedDeviceDataPtr, CHANNEL, Duty);
+  (void)TU4_SetOffsetTicks(DeviceDataPrv->LinkedDeviceDataPtr, CHANNEL, Duty);
 }
 /* END PwmLdd1. */
 

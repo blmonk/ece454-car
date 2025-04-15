@@ -43,6 +43,13 @@
 #include "si_cam.h"
 #include "TU2.h"
 #include "TU3.h"
+#include "PWM2.h"
+#include "PwmLdd2.h"
+#include "PWM3.h"
+#include "PwmLdd3.h"
+#include "TU4.h"
+#include "Cap1.h"
+#include "CaptureLdd1.h"
 #include "TU1.h"
 #include "AS1.h"
 #include "ASerialLdd1.h"
@@ -104,24 +111,6 @@ void TI1_OnInterrupt(void);
 ** ===================================================================
 */
 void TI2_OnInterrupt(void);
-
-/*
-** ===================================================================
-**     Event       :  PWM1_OnEnd (module Events)
-**
-**     Component   :  PWM1 [PWM]
-**     Description :
-**         This event is called when the specified number of cycles has
-**         been generated. (Only when the component is enabled -
-**         <Enable> and the events are enabled - <EnableEvent>). The
-**         event is available only when the <Interrupt service/event>
-**         property is enabled and selected peripheral supports
-**         appropriate interrupt.
-**     Parameters  : None
-**     Returns     : Nothing
-** ===================================================================
-*/
-void PWM1_OnEnd(void);
 
 /*
 ** ===================================================================
@@ -198,6 +187,36 @@ void AS1_OnFullRxBuf(void);
 ** ===================================================================
 */
 void AS1_OnFreeTxBuf(void);
+
+void EInt1_OnInterrupt(void);
+/*
+** ===================================================================
+**     Event       :  EInt1_OnInterrupt (module Events)
+**
+**     Component   :  EInt1 [ExtInt]
+**     Description :
+**         This event is called when an active signal edge/level has
+**         occurred.
+**     Parameters  : None
+**     Returns     : Nothing
+** ===================================================================
+*/
+
+/*
+** ===================================================================
+**     Event       :  Cap1_OnCapture (module Events)
+**
+**     Component   :  Cap1 [Capture]
+**     Description :
+**         This event is called on capturing of Timer/Counter actual
+**         value (only when the component is enabled - <Enable> and the
+**         events are enabled - <EnableEvent>.This event is available
+**         only if a <interrupt service/event> is enabled.
+**     Parameters  : None
+**     Returns     : Nothing
+** ===================================================================
+*/
+void Cap1_OnCapture(void);
 
 /* END Events */
 

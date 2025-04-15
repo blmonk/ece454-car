@@ -8,7 +8,7 @@
 **     Repository  : Kinetis
 **     Datasheet   : KL25P80M48SF0RM, Rev.3, Sep 2012
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-08, 09:58, # CodeGen: 0
+**     Date/Time   : 2025-03-21, 12:23, # CodeGen: 62
 **     Abstract    :
 **
 **     Settings    :
@@ -145,6 +145,19 @@ extern volatile uint8_t SR_reg;        /* Current FAULTMASK register */
 /*lint -esym(765,SR_lock) Disable MISRA rule (8.10) checking for symbols (SR_lock). The SR_reg is used in inline assembler. */
 extern volatile uint8_t SR_lock;
 
+
+/* {Default RTOS Adapter} ISR function prototype */
+PE_ISR(Cpu_ivINT_PIT);
+/*
+** ===================================================================
+**     Method      :  Cpu_Cpu_ivINT_PIT (component MKL25Z128LK4)
+**
+**     Description :
+**         This ISR services the ivINT_PIT interrupt shared by several 
+**         components.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
+*/
 
 /*
 ** ===================================================================

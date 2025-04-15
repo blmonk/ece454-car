@@ -189,27 +189,6 @@ void TI2_OnInterrupt(void)
 
 /*
 ** ===================================================================
-**     Event       :  PWM1_OnEnd (module Events)
-**
-**     Component   :  PWM1 [PWM]
-**     Description :
-**         This event is called when the specified number of cycles has
-**         been generated. (Only when the component is enabled -
-**         <Enable> and the events are enabled - <EnableEvent>). The
-**         event is available only when the <Interrupt service/event>
-**         property is enabled and selected peripheral supports
-**         appropriate interrupt.
-**     Parameters  : None
-**     Returns     : Nothing
-** ===================================================================
-*/
-void PWM1_OnEnd(void)
-{
-  /* Write your code here ... */
-}
-
-/*
-** ===================================================================
 **     Event       :  AS1_OnError (module Events)
 **
 **     Component   :  AS1 [AsynchroSerial]
@@ -297,6 +276,51 @@ void AS1_OnFullRxBuf(void)
 void AS1_OnFreeTxBuf(void)
 {
   /* Write your code here ... */
+}
+
+/*
+** ===================================================================
+**     Event       :  EInt1_OnInterrupt (module Events)
+**
+**     Component   :  EInt1 [ExtInt]
+**     Description :
+**         This event is called when an active signal edge/level has
+**         occurred.
+**     Parameters  : None
+**     Returns     : Nothing
+** ===================================================================
+*/
+//uint16_t readdata;
+//float velocity;
+//
+//void EInt1_OnInterrupt(void)
+//{
+//  /* Write your code here ... */
+//	RT1_GetTimeMS(RT1_Init, &readdata);
+//	RT1_Reset(RT1_Init);
+//	velocity = 1000.0 / (float)readdata;
+//
+//}
+
+/*
+** ===================================================================
+**     Event       :  Cap1_OnCapture (module Events)
+**
+**     Component   :  Cap1 [Capture]
+**     Description :
+**         This event is called on capturing of Timer/Counter actual
+**         value (only when the component is enabled - <Enable> and the
+**         events are enabled - <EnableEvent>.This event is available
+**         only if a <interrupt service/event> is enabled.
+**     Parameters  : None
+**     Returns     : Nothing
+** ===================================================================
+*/
+void Cap1_OnCapture(void)
+{
+  /* Write your code here ... */
+	//Cap1_GetCaptureValue();
+	//Cap1_Reset();
 }
 
 /* END Events */

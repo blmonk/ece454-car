@@ -8,7 +8,7 @@
 **     Repository  : Kinetis
 **     Datasheet   : KL25P80M48SF0RM, Rev.3, Sep 2012
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-14, 15:00, # CodeGen: 57
+**     Date/Time   : 2025-04-11, 15:35, # CodeGen: 71
 **     Abstract    :
 **
 **     Settings    :
@@ -252,12 +252,19 @@
 #include "TimerIntLdd1.h"
 #include "TI2.h"
 #include "TimerIntLdd2.h"
-#include "PWM1.h"
-#include "PwmLdd1.h"
 #include "clk_cam.h"
 #include "si_cam.h"
 #include "TU2.h"
+#include "Cap1.h"
+#include "CaptureLdd1.h"
 #include "TU3.h"
+#include "PWM1.h"
+#include "PwmLdd1.h"
+#include "PWM2.h"
+#include "PwmLdd2.h"
+#include "PWM3.h"
+#include "PwmLdd3.h"
+#include "TU4.h"
 #include "PE_Types.h"
 #include "PE_Error.h"
 #include "PE_Const.h"
@@ -273,6 +280,22 @@ extern "C" {
 volatile uint8_t SR_reg;               /* Current value of the FAULTMASK register */
 volatile uint8_t SR_lock = 0x00U;      /* Lock */
 
+
+/*
+** ===================================================================
+**     Method      :  Cpu_Cpu_ivINT_PIT (component MKL25Z128LK4)
+**
+**     Description :
+**         This ISR services the ivINT_PIT interrupt shared by several 
+**         components.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
+*/
+PE_ISR(Cpu_ivINT_PIT)
+{
+  TU1_Interrupt();                     /* Call the service routine */
+  TU2_Interrupt();                     /* Call the service routine */
+}
 
 /*
 ** ===================================================================
@@ -447,12 +470,18 @@ void PE_low_level_init(void)
   /* ### TimerInt_LDD "TimerIntLdd2" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)TimerIntLdd2_Init(NULL);
   /* ### TimerInt "TI2" init code ... */
-  /* ### PWM_LDD "PwmLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
-  (void)PwmLdd1_Init(NULL);
   /* ### BitIO_LDD "clk_cam" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)clk_cam_Init(NULL);
   /* ### BitIO_LDD "si_cam" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)si_cam_Init(NULL);
+  /* ### Capture_LDD "CaptureLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)CaptureLdd1_Init(NULL);
+  /* ### PWM_LDD "PwmLdd1" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd1_Init(NULL);
+  /* ### PWM_LDD "PwmLdd2" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd2_Init(NULL);
+  /* ### PWM_LDD "PwmLdd3" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)PwmLdd3_Init(NULL);
   __EI();
 }
   /* Flash configuration field */

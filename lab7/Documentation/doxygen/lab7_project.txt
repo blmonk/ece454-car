@@ -28,10 +28,14 @@
 - \subpage TimerIntLdd1
 - \subpage TU2
 - \subpage TimerIntLdd2
-- \subpage TU3
-- \subpage PwmLdd1
 - \subpage clk_cam
 - \subpage si_cam
+- \subpage TU3
+- \subpage CaptureLdd1
+- \subpage TU4
+- \subpage PwmLdd1
+- \subpage PwmLdd2
+- \subpage PwmLdd3
 
 */
 
