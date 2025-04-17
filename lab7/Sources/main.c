@@ -58,6 +58,49 @@
 #include "PE_Const.h"
 #include "IO_Map.h"
 /* User includes (#include below this line is not maintained by Processor Expert) */
+#define CAM_THRESHOLD 20000
+
+
+int findCenterOfLongestRun(const uint16_t *arr, int size) {
+    int maxLen = 0, maxStart = -1;
+    int currentLen = 0, currentStart = 0;
+
+    for (int i = 0; i < size; ++i) {
+        if (arr[i] == 1) {
+            if (currentLen == 0) currentStart = i;
+            currentLen++;
+            if (currentLen > maxLen) {
+                maxLen = currentLen;
+                maxStart = currentStart;
+            }
+        } else {
+            currentLen = 0;
+        }
+    }
+
+    if (maxLen == 0) return (size/2); // No run of 1s found, default to center
+    return maxStart + maxLen/2;
+}
+
+int findCenterByEdges(const uint16_t *arr, int size) {
+	int leftEdge = 0;
+	int rightEdge = 0;
+	// find left edge
+	for (int i=0; i<size; i++) {
+	  if (arr[i] == 1) {
+		  leftEdge = i;
+		  break;
+	  }
+	}
+	// find right edge
+	for (int i=size-1; i>=0; i--) {
+	  if (arr[i] == 1) {
+		  rightEdge = i;
+		  break;
+	  }
+	}
+	return (leftEdge + rightEdge) / 2;
+}
 
 uint16_t adc_val[128];
 uint16_t adc_val_buf[128];
@@ -85,8 +128,6 @@ int main(void)
   // disable pwm output for braking FET (PDT0 - PWM3)
   // enable pwm and set at constant speed for main FET (PDT1 - PWM2)
 
-
-
   uint8_t line_left  = 0;
   uint8_t line_right = 127;
 
@@ -100,7 +141,7 @@ int main(void)
 			  // copy to buffer that only updates every full read
 			  for (uint8_t i=0; i<128; i++){
 				  adc_val_buf[i] = adc_val[i];
-				  if (adc_val[i] < 8000) {
+				  if (adc_val[i] < CAM_THRESHOLD) {
 					  cam_binary[i] = 1;
 					  // msg[i] = '1';
 					  AS1_SendChar('1');
@@ -119,21 +160,7 @@ int main(void)
 			  // print to console
 			  // AS1_SendChar();
 
-			  // find left side of line
-			  for (int i=0; i<128; i++) {
-				  if (cam_binary[i] == 1) {
-					  line_left = i;
-					  break;
-				  }
-			  }
-			  // find right side of line
-			  for (int i=127; i>=0; i--) {
-				  if (cam_binary[i] == 1) {
-					  line_right = i;
-					  break;
-				  }
-			  }
-			  line_center = (line_left + line_right) / 2;
+			  line_center = findCenterOfLongestRun(cam_binary, 128);
 		  }
 	  }
   }

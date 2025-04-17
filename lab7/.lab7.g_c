@@ -392,7 +392,7 @@
     </GenFiles>
     <SignalListFile>Documentation\lab7_SIGNALS.txt</SignalListFile>
     <DestinationCompiler>GNUC</DestinationCompiler>
-    <ProjectModificationStamp>65</ProjectModificationStamp>
+    <ProjectModificationStamp>73</ProjectModificationStamp>
   </Options>
   <CpuID_2>
     <Generated>true</Generated>
@@ -2330,8 +2330,8 @@
     <GenComponentVersion>02.241</GenComponentVersion>
     <GenDriverVersion>01.01</GenDriverVersion>
     <GenEventModule>Events</GenEventModule>
-    <HeaderAge>1519090823</HeaderAge>
-    <CodeAge>1519090823</CodeAge>
+    <HeaderAge>1519486449</HeaderAge>
+    <CodeAge>1519486449</CodeAge>
     <AsemblAge>-1</AsemblAge>
     <GenNumMethods>14</GenNumMethods>
     <Enable>false</Enable>
@@ -2411,8 +2411,8 @@
       <GenComponentVersion>01.014</GenComponentVersion>
       <GenDriverVersion>01.03</GenDriverVersion>
       <GenEventModule>Events</GenEventModule>
-      <HeaderAge>1519090823</HeaderAge>
-      <CodeAge>1519090823</CodeAge>
+      <HeaderAge>1519486449</HeaderAge>
+      <CodeAge>1519486449</CodeAge>
       <AsemblAge>-1</AsemblAge>
       <GenNumMethods>18</GenNumMethods>
       <Init>true</Init>
@@ -2712,8 +2712,8 @@
     <GenComponentVersion>01.164</GenComponentVersion>
     <GenDriverVersion>01.11</GenDriverVersion>
     <GenEventModule>Events</GenEventModule>
-    <HeaderAge>1519090823</HeaderAge>
-    <CodeAge>1519090823</CodeAge>
+    <HeaderAge>1519486449</HeaderAge>
+    <CodeAge>1519486449</CodeAge>
     <AsemblAge>-1</AsemblAge>
     <GenNumMethods>22</GenNumMethods>
     <Init>true</Init>

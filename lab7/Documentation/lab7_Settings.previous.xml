@@ -1190,7 +1190,7 @@ rising or falling edge
       <Counter v="TPM0_CNT" />
       <boolgroup name="Interrupt service/event" v="Disabled" />
       <Period v="20 ms" />
-      <Starting_pulse_width v="10 ms" />
+      <Starting_pulse_width v="18.2 ms" />
       <Initial_polarity v="low" />
       <Same_period_in_modes v="no" />
       <Component_uses_entire_timer v="no" />
@@ -1214,7 +1214,7 @@ rising or falling edge
             <Counter v="TPM0_CNT" />
             <boolgroup name="Interrupt service/event" v="Disabled" />
             <Period v="20 ms" />
-            <Starting_pulse_width v="10 ms" />
+            <Starting_pulse_width v="18.2 ms" />
             <Initial_polarity v="low" />
             <group name="Initialization">
               <Enabled_in_init__code v="yes" />
@@ -1286,7 +1286,7 @@ rising or falling edge
       <Counter v="TPM0_CNT" />
       <boolgroup name="Interrupt service/event" v="Disabled" />
       <Period v="20 ms" />
-      <Starting_pulse_width v="10 ms" />
+      <Starting_pulse_width v="20 ms" />
       <Initial_polarity v="low" />
       <Same_period_in_modes v="no" />
       <Component_uses_entire_timer v="no" />
@@ -1310,7 +1310,7 @@ rising or falling edge
             <Counter v="TPM0_CNT" />
             <boolgroup name="Interrupt service/event" v="Disabled" />
             <Period v="20 ms" />
-            <Starting_pulse_width v="10 ms" />
+            <Starting_pulse_width v="20 ms" />
             <Initial_polarity v="low" />
             <group name="Initialization">
               <Enabled_in_init__code v="yes" />
@@ -1405,7 +1405,7 @@ rising or falling edge
         <group name="Channel 1">
           <enumgroup name="Mode" v="Compare">
             <Compare v="TPM0_C1V" />
-            <Offset v="10 ms" />
+            <Offset v="18.2 ms" />
             <enumgroup name="Output on compare" v="Set">
               <Output_on_overrun v="Clear" />
               <Initial_state v="Low" />
@@ -1417,7 +1417,7 @@ rising or falling edge
         <group name="Channel 2">
           <enumgroup name="Mode" v="Compare">
             <Compare v="TPM0_C0V" />
-            <Offset v="10 ms" />
+            <Offset v="20 ms" />
             <enumgroup name="Output on compare" v="Set">
               <Output_on_overrun v="Clear" />
               <Initial_state v="Low" />
