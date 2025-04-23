@@ -60,12 +60,16 @@
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #define CAM_THRESHOLD 20000
 
+#define EDGE_IGNORE 8 // number of positions on each side of camera array to ignore
 
+
+int lastCenter = 64;
 int findCenterOfLongestRun(const uint16_t *arr, int size) {
     int maxLen = 0, maxStart = -1;
-    int currentLen = 0, currentStart = 0;
+    int currentLen = 0, currentStart = 0 + EDGE_IGNORE;
 
-    for (int i = 0; i < size; ++i) {
+    // for (int i = 0; i < size; ++i) {
+    for (int i = EDGE_IGNORE; i < size-EDGE_IGNORE; ++i) {
         if (arr[i] == 1) {
             if (currentLen == 0) currentStart = i;
             currentLen++;
@@ -78,8 +82,10 @@ int findCenterOfLongestRun(const uint16_t *arr, int size) {
         }
     }
 
-    if (maxLen == 0) return (size/2); // No run of 1s found, default to center
-    return maxStart + maxLen/2;
+    // if (maxLen == 0) return (size/2); // No run of 1s found, default to center
+    if (maxLen == 0) return lastCenter;
+    lastCenter = maxStart + maxLen/2;
+    return lastCenter;
 }
 
 int findCenterByEdges(const uint16_t *arr, int size) {

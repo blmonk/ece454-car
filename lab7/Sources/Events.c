@@ -175,25 +175,25 @@ void TI1_OnInterrupt(void)
 
 // control loop
 extern uint8_t line_center;
-uint16_t pwm_out = 18775;
+int pwm_out = 18775;
 
 float previous_error = 0;
 
 void TI2_OnInterrupt(void)
 {
-	float kp = 4.0;
-	float kd = 0.5;
+	float kp = 5.0;
+	float kd = 1.2;
 	float error = 64 - line_center;  // 64 is where center should be
 	float derivative = error - previous_error;
 	float output = kp * error - kd * derivative;
 
 //	uint16_t pwm_out = SERVO_PWM_CENTER + (uint16_t)output;
-	pwm_out = SERVO_PWM_CENTER + (uint16_t)output;
+	pwm_out = SERVO_PWM_CENTER + (int)output;
 
 	if (pwm_out < SERVO_PWM_RIGHT) pwm_out = SERVO_PWM_RIGHT;
 	else if (pwm_out > SERVO_PWM_LEFT) pwm_out = SERVO_PWM_LEFT;
 
-	PWM1_SetDutyUS(pwm_out);
+	PWM1_SetDutyUS((uint16_t)pwm_out);
 
 }
 

@@ -7,7 +7,7 @@
 **     Version     : Component 01.164, Driver 01.11, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-04-17, 16:47, # CodeGen: 90
+**     Date/Time   : 2025-04-18, 15:19, # CodeGen: 108
 **     Abstract    :
 **          This TimerUnit component provides a low level API for unified hardware access across
 **          various timer devices using the Prescaler-Counter-Compare-Capture timer structure.
@@ -38,7 +38,7 @@
 **            Channel 1                                    : 
 **              Mode                                       : Compare
 **                Compare                                  : TPM0_C1V
-**                Offset                                   : 18 ms
+**                Offset                                   : 14 ms
 **                Output on compare                        : Set
 **                  Output on overrun                      : Clear
 **                  Initial state                          : Low
@@ -160,7 +160,7 @@ extern "C" {
 #define TU4_COUNTER_WIDTH  0x10U       /* Counter width in bits  */
 #define TU4_COUNTER_DIR    DIR_UP      /* Direction of counting */
 #define TU4_OFFSET_0_TICKS 0x6666ul    /* Initialization value of offset as 'counter ticks' for channel 0 */
-#define TU4_OFFSET_1_TICKS 0xB852ul    /* Initialization value of offset as 'counter ticks' for channel 1 */
+#define TU4_OFFSET_1_TICKS 0x8F5Cul    /* Initialization value of offset as 'counter ticks' for channel 1 */
 #define TU4_OFFSET_2_TICKS 0xCCCDul    /* Initialization value of offset as 'counter ticks' for channel 2 */
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */
 #define TU4_PRPH_BASE_ADDRESS  0x40038000U
