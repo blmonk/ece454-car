@@ -35,9 +35,9 @@ extern "C" {
 
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-#define SERVO_PWM_LEFT 19100
-#define SERVO_PWM_RIGHT 18450
-#define SERVO_PWM_CENTER 18775
+#define SERVO_PWM_LEFT 19225
+#define SERVO_PWM_RIGHT 18775
+#define SERVO_PWM_CENTER 18980
 
 
 /*
@@ -175,25 +175,26 @@ void TI1_OnInterrupt(void)
 
 // control loop
 extern uint8_t line_center;
-int pwm_out = 18775;
+uint16_t pwm_out = 18775;
 
 float previous_error = 0;
 
 void TI2_OnInterrupt(void)
 {
-	float kp = 5.0;
-	float kd = 1.2;
+	float kp = 3.175;
+	float kd = 0.5;
 	float error = 64 - line_center;  // 64 is where center should be
 	float derivative = error - previous_error;
+	previous_error = error;
 	float output = kp * error - kd * derivative;
 
 //	uint16_t pwm_out = SERVO_PWM_CENTER + (uint16_t)output;
-	pwm_out = SERVO_PWM_CENTER + (int)output;
+	pwm_out = SERVO_PWM_CENTER + (uint16_t)output;
 
 	if (pwm_out < SERVO_PWM_RIGHT) pwm_out = SERVO_PWM_RIGHT;
 	else if (pwm_out > SERVO_PWM_LEFT) pwm_out = SERVO_PWM_LEFT;
 
-	PWM1_SetDutyUS((uint16_t)pwm_out);
+	PWM1_SetDutyUS(pwm_out);
 
 }
 
