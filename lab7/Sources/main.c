@@ -59,13 +59,15 @@
 #include "IO_Map.h"
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #define CAM_THRESHOLD 20000
+#define EDGE_IGNORE 11 // number of positions on each side of camera array to ignore
 
+int lastCenter = 64;
 
 int findCenterOfLongestRun(const uint16_t *arr, int size) {
     int maxLen = 0, maxStart = -1;
-    int currentLen = 0, currentStart = 0;
+    int currentLen = 0, currentStart = EDGE_IGNORE;
 
-    for (int i = 0; i < size; ++i) {
+    for (int i = EDGE_IGNORE; i < size-EDGE_IGNORE; ++i) {
         if (arr[i] == 1) {
             if (currentLen == 0) currentStart = i;
             currentLen++;
@@ -78,8 +80,9 @@ int findCenterOfLongestRun(const uint16_t *arr, int size) {
         }
     }
 
-    if (maxLen == 0) return (size/2); // No run of 1s found, default to center
-    return maxStart + maxLen/2;
+    if (maxLen == 0) return lastCenter;
+    lastCenter = maxStart + maxLen/2;
+    return lastCenter;
 }
 
 int findCenterByEdges(const uint16_t *arr, int size) {
@@ -106,10 +109,18 @@ uint16_t adc_val[128];
 uint16_t adc_val_buf[128];
 uint16_t cam_binary[128];
 
+uint16_t speed_adc_val = 0;
+uint16_t speed_pwm_out = 20000;
+
 volatile bool measure_adc_flag;
 volatile uint8_t adc_index;
 
 uint8_t line_center = 64;
+
+uint16_t kp_adc_val;
+uint16_t kd_adc_val;
+extern volatile float kp;
+extern volatile float kd;
 
 char msg[129];
 
@@ -134,7 +145,11 @@ int main(void)
   for(;;) {
 	  if (measure_adc_flag){
 		  AD1_Measure(TRUE);
-		  AD1_GetValue16(&adc_val[adc_index]);
+		  AD1_GetChanValue16(0, &adc_val[adc_index]);
+		  AD1_GetChanValue16(1, &speed_adc_val);
+		  AD1_GetChanValue16(2, &kp_adc_val);
+		  AD1_GetChanValue16(3, &kd_adc_val);
+
 		  measure_adc_flag = 0;
 
 		  if (adc_index == 127){
@@ -161,6 +176,13 @@ int main(void)
 			  // AS1_SendChar();
 
 			  line_center = findCenterOfLongestRun(cam_binary, 128);
+
+			  speed_pwm_out = 0 + ((uint32_t)speed_adc_val * (20000 - 0)) / 65535;
+			  PWM2_SetDutyUS(speed_pwm_out);
+
+			  kp = 2.0f + ((float)kp_adc_val / 65535.0f) * (5.0f - 2.0f);
+			  kd = ((float)kd_adc_val / 65535.0f) * 8.0f;
+
 		  }
 	  }
   }

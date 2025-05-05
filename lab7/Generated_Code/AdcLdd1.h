@@ -7,7 +7,7 @@
 **     Version     : Component 01.183, Driver 01.08, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2025-03-21, 12:09, # CodeGen: 61
+**     Date/Time   : 2025-05-02, 13:43, # CodeGen: 120
 **     Abstract    :
 **         This device "ADC_LDD" implements an A/D converter,
 **         its control methods and interrupt/event handling procedure.
@@ -17,11 +17,26 @@
 **          Discontinuous mode                             : no
 **          Interrupt service/event                        : Disabled
 **          DMA                                            : Disabled
-**          A/D channel list                               : 1
+**          A/D channel list                               : 4
 **            Channel 0                                    : 
 **              Channel mode                               : Single Ended
 **                Input                                    : 
 **                  A/D channel (pin)                      : ADC0_DM3/ADC0_SE7a/PTE23/TPM2_CH1/UART2_RX
+**                  A/D channel (pin) signal               : 
+**            Channel 1                                    : 
+**              Channel mode                               : Single Ended
+**                Input                                    : 
+**                  A/D channel (pin)                      : ADC0_SE11/TSI0_CH15/PTC2/I2C1_SDA/TPM0_CH1
+**                  A/D channel (pin) signal               : 
+**            Channel 2                                    : 
+**              Channel mode                               : Single Ended
+**                Input                                    : 
+**                  A/D channel (pin)                      : ADC0_SE9/TSI0_CH6/PTB1/I2C0_SDA/TPM1_CH1
+**                  A/D channel (pin) signal               : 
+**            Channel 3                                    : 
+**              Channel mode                               : Single Ended
+**                Input                                    : 
+**                  A/D channel (pin)                      : ADC0_SE12/TSI0_CH7/PTB2/I2C0_SCL/TPM2_CH0
 **                  A/D channel (pin) signal               : 
 **          Static sample groups                           : Disabled
 **          Max. samples                                   : 8
@@ -166,7 +181,7 @@ extern "C" {
 
 /* This constant contains the number of channels in the "A/D channel list"
    group */
-#define AdcLdd1_CHANNEL_COUNT           1u
+#define AdcLdd1_CHANNEL_COUNT           4u
 
 /* This constant can be used in the sample array to create a gap in sample group.
    It is intended to disable a measurement of a sample */

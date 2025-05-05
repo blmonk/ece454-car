@@ -409,11 +409,32 @@ PE_DEBUGHALT();
           <Discontinuous_mode v="no" />
           <boolgroup name="Interrupt service/event" v="Disabled" />
           <boolgroup name="DMA" v="Disabled" />
-          <list name="A/D channel list" v="1">
+          <list name="A/D channel list" v="4">
             <group name="Channel 0">
               <enumgroup name="Channel mode" v="Single Ended">
                 <group name="Input">
                   <A_D_channel__pin_ v="ADC0_DM3/ADC0_SE7a/PTE23/TPM2_CH1/UART2_RX" />
+                </group>
+              </enumgroup>
+            </group>
+            <group name="Channel 1">
+              <enumgroup name="Channel mode" v="Single Ended">
+                <group name="Input">
+                  <A_D_channel__pin_ v="ADC0_SE11/TSI0_CH15/PTC2/I2C1_SDA/TPM0_CH1" />
+                </group>
+              </enumgroup>
+            </group>
+            <group name="Channel 2">
+              <enumgroup name="Channel mode" v="Single Ended">
+                <group name="Input">
+                  <A_D_channel__pin_ v="ADC0_SE9/TSI0_CH6/PTB1/I2C0_SDA/TPM1_CH1" />
+                </group>
+              </enumgroup>
+            </group>
+            <group name="Channel 3">
+              <enumgroup name="Channel mode" v="Single Ended">
+                <group name="Input">
+                  <A_D_channel__pin_ v="ADC0_SE12/TSI0_CH7/PTB2/I2C0_SCL/TPM2_CH0" />
                 </group>
               </enumgroup>
             </group>
@@ -488,9 +509,21 @@ Autoselect
         </Events>
       </inhrbean>
       <boolgroup name="Interrupt service/event" v="Disabled" />
-      <list name="A/D channels" v="1">
+      <list name="A/D channels" v="4">
         <group name="Channel0">
           <A_D_channel__pin_ v="ADC0_DM3/ADC0_SE7a/PTE23/TPM2_CH1/UART2_RX" />
+          <boolgroup name="Mode select" v="Single Ended" />
+        </group>
+        <group name="Channel1">
+          <A_D_channel__pin_ v="ADC0_SE11/TSI0_CH15/PTC2/I2C1_SDA/TPM0_CH1" />
+          <boolgroup name="Mode select" v="Single Ended" />
+        </group>
+        <group name="Channel2">
+          <A_D_channel__pin_ v="ADC0_SE9/TSI0_CH6/PTB1/I2C0_SDA/TPM1_CH1" />
+          <boolgroup name="Mode select" v="Single Ended" />
+        </group>
+        <group name="Channel3">
+          <A_D_channel__pin_ v="ADC0_SE12/TSI0_CH7/PTB2/I2C0_SCL/TPM2_CH0" />
           <boolgroup name="Mode select" v="Single Ended" />
         </group>
       </list>
@@ -533,7 +566,7 @@ Autoselect
       <GetValue8 v="don&amp;apos;t generate code" />
       <GetChanValue8 v="don&amp;apos;t generate code" />
       <GetValue16 v="generate code" />
-      <GetChanValue16 v="don&amp;apos;t generate code" />
+      <GetChanValue16 v="generate code" />
       <Calibrate v="generate code" />
       <GetCalibrationStatus v="don&amp;apos;t generate code" />
       <EnableAsynchroClock v="don&amp;apos;t generate code" />
